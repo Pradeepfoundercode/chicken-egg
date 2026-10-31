@@ -55,21 +55,22 @@ export default function AnimatedCartonScene({
           return () => clearTimeout(retryTimer)
         }
 
-        // Set dimensions of the carton box container to match destination size directly on element
-        cartonBoxRef.current.style.width = `${endBox.width}px`
-        cartonBoxRef.current.style.height = `${endBox.height}px`
+        // Set dimensions of the carton box container to match startBox size directly
+        // So at liftoff, it is 100% pixel-for-pixel identical to the card (Scale 1.0, zero blur)
+        cartonBoxRef.current.style.width = `${startBox.width}px`
+        cartonBoxRef.current.style.height = `${startBox.height}px`
 
-        const scaleStart = startBox.width / endBox.width
-        const startX = startBox.x + (startBox.width - endBox.width) / 2
-        const startY = startBox.y + (startBox.height - endBox.height) / 2
-        const endX = endBox.x
-        const endY = endBox.y
+        const scaleEnd = endBox.width / startBox.width
+        const startX = startBox.x
+        const startY = startBox.y
+        const targetX = endBox.x + (endBox.width - startBox.width) / 2
+        const targetY = endBox.y + (endBox.height - startBox.height) / 2
 
         // Initial setup: box positioned directly on the Section 3 selected card, hidden until scroll starts
         gsap.set(cartonBoxRef.current, {
           x: startX,
           y: startY,
-          scale: scaleStart,
+          scale: 1,
           opacity: 0,
           visibility: 'hidden',
           transformOrigin: 'center center',
@@ -80,72 +81,68 @@ export default function AnimatedCartonScene({
           gsap.set(sec3SelectedCartonRef.current, { opacity: 1 })
         }
 
+        const isMobile = window.innerWidth < 1024
+
         // Master ScrollTrigger Timeline: Drives box travel from Section 3 to Section 4 on scroll
         const tl = gsap.timeline({
           scrollTrigger: {
-            trigger: sec4SectionRef.current,
-            start: 'top 75%', // Starts when user scrolls past Section 3 and Section 4 begins entering
+            trigger: isMobile ? sec3SelectedCartonRef.current : sec4SectionRef.current,
+            start: isMobile ? 'top 20%' : 'top 75%', // Starts when user scrolls past the selected box on mobile, or when Section 4 arrives on desktop
+            endTrigger: sec4SectionRef.current,
             end: 'top 20%',   // Finishes when Section 4 settles in place
             scrub: 0.6,       // Smooth physical scroll scrubbing
           },
         })
 
-        // 1. Reveal the traveling box immediately as user begins scrolling past Section 3
-        tl.fromTo(
+        // 1. Instantaneous handoff at scroll start: cartonBoxRef shows at scale 1, card box hides (zero crossfade blur!)
+        tl.set(
           cartonBoxRef.current,
           {
             x: startX,
             y: startY,
-            scale: scaleStart,
-            opacity: 0,
-            visibility: 'hidden',
-          },
-          {
+            scale: 1,
             opacity: 1,
             visibility: 'visible',
-            duration: 0.04,
-            ease: 'none',
             immediateRender: false,
           },
           0
         )
 
-        // As the box lifts off the card, hide the box in the card so no duplicate remains
         if (sec3SelectedCartonRef?.current) {
-          tl.to(
+          tl.set(
             sec3SelectedCartonRef.current,
             {
               opacity: 0,
-              duration: 0.04,
-              ease: 'power1.out',
               immediateRender: false,
             },
             0
           )
         }
 
-        // 2. Glides smoothly down the page from Section 3 into Section 4's destination slot
+        // 2. Glides smoothly down the page from Section 3 into Section 4's destination slot (scaling up smoothly)
         tl.fromTo(
           cartonBoxRef.current,
           {
             x: startX,
             y: startY,
-            scale: scaleStart,
+            scale: 1,
           },
           {
-            x: endX,
-            y: endY,
-            scale: 1,
+            x: targetX,
+            y: targetY,
+            scale: scaleEnd,
             ease: 'power1.inOut',
-            duration: 0.95,
+            duration: 1.0,
             immediateRender: false,
           },
-          0.05
+          0
         )
       })
+
+      ScrollTrigger.refresh()
     }
 
-    const timer = setTimeout(initAnimation, 150)
+    const timer = setTimeout(initAnimation, 120)
 
     const handleResize = () => {
       ScrollTrigger.refresh()
@@ -185,6 +182,8 @@ export default function AnimatedCartonScene({
           visibility: 'hidden',
           opacity: 0,
           transformOrigin: 'center center',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
         }}
       >
         {/* Aspect Ratio Box Container */}
@@ -192,11 +191,11 @@ export default function AnimatedCartonScene({
           className="relative w-full h-full select-none"
           style={{ aspectRatio: currentPack.aspect }}
         >
-          {/* Base Carton Image */}
+          {/* Base Carton Image (No shadow) */}
           <img
             src={currentPack.image}
             alt={currentPack.subtitle}
-            className="w-full h-full object-contain pointer-events-none drop-shadow-[0_25px_50px_rgba(0,0,0,0.65)]"
+            className="w-full h-full object-contain pointer-events-none select-none"
           />
 
           {/* Eggs Layer */}
@@ -204,12 +203,11 @@ export default function AnimatedCartonScene({
             const zIndex = egg.row === 2 ? 14 : 8
             const eggW = egg.row === 1 ? currentPack.eggW * 0.94 : currentPack.eggW
             const eggH = egg.row === 1 ? currentPack.eggH * 0.94 : currentPack.eggH
-            const delayMs = eggIdx * 35
 
             return (
               <div
                 key={eggIdx}
-                className="absolute pointer-events-none flex items-center justify-center will-change-transform"
+                className="absolute pointer-events-none flex items-center justify-center"
                 style={{
                   left: `${egg.x}%`,
                   top: `${egg.y}%`,
@@ -219,48 +217,37 @@ export default function AnimatedCartonScene({
                   transform: 'translate(-50%, -50%)',
                 }}
               >
-                {/* Brown Egg Layer */}
+                {/* Brown Egg Layer (No shadow) */}
                 <div
-                  className="absolute inset-0 w-full h-full flex items-center justify-center will-change-transform"
+                  className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none"
                   style={{
-                    transition:
-                      'opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1)',
-                    transitionDelay: `${delayMs}ms`,
                     opacity: selectedType === 'brown' ? 1 : 0,
-                    transform: selectedType === 'brown' ? 'scale(1)' : 'scale(0.85)',
                   }}
                 >
                   <img
                     src={brownEggImg}
                     alt=""
-                    className="w-full h-full object-contain pointer-events-none select-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
+                    className="w-full h-full object-contain pointer-events-none select-none"
                   />
                 </div>
 
-                {/* White Egg Layer */}
+                {/* White Egg Layer (No shadow) */}
                 <div
-                  className="absolute inset-0 w-full h-full flex items-center justify-center will-change-transform"
+                  className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none"
                   style={{
-                    transition:
-                      'opacity 0.4s ease-in-out, transform 0.4s cubic-bezier(0.34, 1.4, 0.64, 1)',
-                    transitionDelay: `${delayMs}ms`,
                     opacity: selectedType === 'white' ? 1 : 0,
-                    transform: selectedType === 'white' ? 'scale(1)' : 'scale(0.85)',
                   }}
                 >
                   <img
                     src={whiteEggImg}
                     alt=""
-                    className="w-full h-full object-contain scale-y-[0.94] pointer-events-none select-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.4)]"
+                    className="w-full h-full object-contain scale-y-[0.94] pointer-events-none select-none"
                   />
                 </div>
               </div>
             )
           })}
         </div>
-
-        {/* Bottom Floor Shadow */}
-        <div className="w-4/5 mx-auto h-5 bg-black/50 rounded-full blur-[14px] -mt-2 pointer-events-none" />
       </div>
     </div>
   )

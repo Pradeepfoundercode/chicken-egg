@@ -16,6 +16,7 @@ export default function AnimatedEggsScene({
   sec3SectionRef,
   sec3DockEggRef,
   selectedType = 'brown',
+  selectedPackId = 'pack-10',
   isIntroComplete = false,
   onEggsLanded,
   onProgressChange,
@@ -568,6 +569,7 @@ export default function AnimatedEggsScene({
     sec3SectionRef,
     sec3DockEggRef,
     selectedType,
+    selectedPackId,
     onProgressChange,
   ])
 

@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import Hero from '../components/Hero'
 import TwoShellsSection from '../components/TwoShellsSection'
 import PickYourPackSection from '../components/PickYourPackSection'
@@ -23,9 +23,29 @@ export default function Home() {
 
   const [scrollProgress, setScrollProgress] = useState(0)
   const [selectedType, setSelectedType] = useState('brown') // 'brown' | 'white'
-  const [selectedPackId, setSelectedPackId] = useState('pack-10') // 'pack-6' | 'pack-10' | 'pack-12'
+  // Small devices = pack-6, Large devices = pack-10
+  const [selectedPackId, setSelectedPackId] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      return 'pack-6'
+    }
+    return 'pack-10'
+  })
   const [isIntroComplete, setIsIntroComplete] = useState(false)
   const [areEggsLanded, setAreEggsLanded] = useState(false)
+
+  // Auto-switch pack based on screen size (small devices: pack-6, large devices: pack-10)
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 1024
+      setSelectedPackId((prev) => {
+        if (isMobile && prev === 'pack-10') return 'pack-6'
+        if (!isMobile && prev === 'pack-6') return 'pack-10'
+        return prev
+      })
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Use callback to avoid excessive re-renders during high-frequency scroll
   const handleProgressChange = useCallback((progress) => {
@@ -35,12 +55,12 @@ export default function Home() {
       const crossedThreshold =
         (prev < 0.96 && progress >= 0.96) ||
         (prev >= 0.96 && progress < 0.96) ||
-        (prev < 0.98 && progress >= 0.98) ||
-        (prev >= 0.98 && progress < 0.98) ||
+        (prev < 0.999 && progress >= 0.999) ||
+        (prev >= 0.999 && progress < 0.999) ||
         (prev < 0.18 && progress >= 0.18) ||
         (prev >= 0.18 && progress < 0.18)
 
-      if (crossedThreshold || Math.abs(prev - progress) > 0.02 || progress === 0 || progress === 1) {
+      if (crossedThreshold || Math.abs(prev - progress) > 0.02 || progress === 0 || progress >= 0.999) {
         return progress
       }
       return prev
@@ -105,6 +125,7 @@ export default function Home() {
         sec3SectionRef={sec3SectionRef}
         sec3DockEggRef={sec3DockEggRef}
         selectedType={selectedType}
+        selectedPackId={selectedPackId}
         isIntroComplete={isIntroComplete}
         onEggsLanded={() => setAreEggsLanded(true)}
         onProgressChange={handleProgressChange}

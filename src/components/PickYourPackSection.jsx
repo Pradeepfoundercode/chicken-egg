@@ -103,6 +103,21 @@ export default function PickYourPackSection({
   setSelectedPackId,
 }) {
   const [addedItem, setAddedItem] = useState(null)
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 1024 : false
+  )
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Small screens target pack of 6 (center egg: eggIdx 4); Large screens target pack of 10 (center egg: eggIdx 7)
+  const targetDockSize = isMobile ? 6 : 10
+  const targetDockEggIdx = isMobile ? 4 : 7
 
   const toggleBtnRef = useRef(null)
   const cardsGridRef = useRef(null)
@@ -245,17 +260,17 @@ export default function PickYourPackSection({
             <div
               key={pack.id}
               onClick={() => setSelectedPackId && setSelectedPackId(pack.id)}
-              className={`pack-card bg-white rounded-3xl p-5 sm:p-6 border transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+              className={`pack-card bg-white rounded-3xl p-5 sm:p-6 border transition-[border-color] duration-150 flex flex-col justify-between cursor-pointer ${
                 isSelected
-                  ? 'border-[#F5A623] ring-2 ring-[#F5A623] shadow-xl'
-                  : 'border-[#EADBCE]/80 shadow-md hover:shadow-lg hover:border-[#D5C2AF]'
+                  ? 'border-[#F5A623] ring-2 ring-[#F5A623]'
+                  : 'border-[#EADBCE]/80 hover:border-[#D5C2AF]'
               }`}
             >
               {/* Top Image Showcase Box */}
-              <div className="relative bg-[#FAF3E5] rounded-2xl p-3 sm:p-4 flex items-center justify-center overflow-hidden h-56 sm:h-64 transition-colors">
+              <div className="relative bg-[#FAF3E5] rounded-2xl p-3 sm:p-4 flex items-center justify-center overflow-hidden h-56 sm:h-64">
                 {/* Active Selection Badge */}
                 {isSelected && (
-                  <div className="absolute top-3 left-3 bg-[#261711] text-[#F5A623] text-[10px] sm:text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-md tracking-wider z-20 flex items-center gap-1">
+                  <div className="absolute top-3 left-3 bg-[#261711] text-[#F5A623] text-[10px] sm:text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider z-20 flex items-center gap-1">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                     </svg>
@@ -264,7 +279,7 @@ export default function PickYourPackSection({
                 )}
 
                 {pack.popular && (
-                  <div className="absolute top-3 right-3 bg-[#F5A623] text-[#261711] text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-2xl tracking-wider z-20">
+                  <div className="absolute top-3 right-3 bg-[#F5A623] text-[#261711] text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider z-20">
                     Popular
                   </div>
                 )}
@@ -275,7 +290,7 @@ export default function PickYourPackSection({
                     if (isSelected && sec3SelectedCartonRef) {
                       sec3SelectedCartonRef.current = el
                     }
-                    if (pack.size === 10 && sec3BrownRef) {
+                    if (pack.size === targetDockSize && sec3BrownRef) {
                       sec3BrownRef.current = el
                     }
                   }}
@@ -286,32 +301,28 @@ export default function PickYourPackSection({
                     aspectRatio: pack.aspect,
                   }}
                 >
-                  {/* Carton Base Image (Empty for 6-pack, normal for 10/12-pack) */}
+                  {/* Carton Base Image (No shadow) */}
                   <img
                     src={pack.image}
                     alt={title}
-                    className="w-full h-full object-contain drop-shadow-lg select-none pointer-events-none"
+                    className="w-full h-full object-contain select-none pointer-events-none"
                   />
 
                   {/* Egg Rendering Layer */}
                   {pack.eggs.map((egg, eggIdx) => {
-                    const delayMs = isWhite
-                      ? eggIdx * 75
-                      : (pack.eggs.length - 1 - eggIdx) * 50
-
                     const zIndex = egg.row === 2 ? 14 : 8
                     const eggW = egg.row === 1 ? pack.eggW * 0.94 : pack.eggW
                     const eggH = egg.row === 1 ? pack.eggH * 0.94 : pack.eggH
-                    const isDockSlot = pack.size === 10 && eggIdx === 7
-                    // Traveling egg box me settle hote hi (0.98) dock slot ka egg reveal ho jayega
-                    const brownEggOpacity = isDockSlot && !isWhite && scrollProgress < 0.98 ? 0 : !isWhite ? 1 : 0
-                    const whiteEggOpacity = isDockSlot && isWhite && scrollProgress < 0.98 ? 0 : isWhite ? 1 : 0
+                    const isDockSlot = pack.size === targetDockSize && eggIdx === targetDockEggIdx
+                    // Traveling egg box me pura settle hone ke baad hi dock slot ka egg reveal hoga (no double egg overlap)
+                    const brownEggOpacity = isDockSlot && !isWhite && scrollProgress < 0.999 ? 0 : !isWhite ? 1 : 0
+                    const whiteEggOpacity = isDockSlot && isWhite && scrollProgress < 0.999 ? 0 : isWhite ? 1 : 0
 
                     return (
                       <div
                         key={eggIdx}
                         ref={isDockSlot ? sec3DockEggRef : null}
-                        className="absolute pointer-events-none flex items-center justify-center will-change-transform"
+                        className="absolute pointer-events-none flex items-center justify-center"
                         style={{
                           left: `${egg.x}%`,
                           top: `${egg.y}%`,
@@ -321,45 +332,33 @@ export default function PickYourPackSection({
                           transform: 'translate(-50%, -50%)',
                         }}
                       >
-                        {/* Empty Carton: Render Brown Egg from code */}
+                        {/* Empty Carton: Render Brown Egg from code (No shadow) */}
                         {pack.isEmptyBase && (
                           <div
-                            className="absolute inset-0 w-full h-full flex items-center justify-center will-change-transform"
+                            className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none"
                             style={{
-                              transition:
-                                isDockSlot && scrollProgress < 0.98
-                                  ? 'none'
-                                  : 'opacity 0.45s ease-in-out, transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)',
-                              transitionDelay: `${delayMs}ms`,
                               opacity: brownEggOpacity,
-                              transform: !isWhite ? 'scale(1)' : 'scale(0.8)',
                             }}
                           >
                             <img
                               src={brownEggImg}
                               alt=""
-                              className="w-full h-full object-contain pointer-events-none select-none drop-shadow-[0_4px_6px_rgba(45,25,12,0.3)]"
+                              className="w-full h-full object-contain pointer-events-none select-none"
                             />
                           </div>
                         )}
 
-                        {/* White Egg Overlay: Transitions in smoothly one by one */}
+                        {/* White Egg Overlay (No shadow) */}
                         <div
-                          className="absolute inset-0 w-full h-full flex items-center justify-center will-change-transform"
+                          className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none"
                           style={{
-                            transition:
-                              isDockSlot && scrollProgress < 0.98
-                                ? 'none'
-                                : 'opacity 0.45s ease-in-out, transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1)',
-                            transitionDelay: `${delayMs}ms`,
                             opacity: whiteEggOpacity,
-                            transform: isWhite ? 'scale(1)' : 'scale(0.8)',
                           }}
                         >
                           <img
                             src={whiteEggImg}
                             alt=""
-                            className="w-full h-full object-contain scale-y-[0.94] pointer-events-none select-none drop-shadow-[0_4px_6px_rgba(45,25,12,0.3)]"
+                            className="w-full h-full object-contain scale-y-[0.94] pointer-events-none select-none"
                           />
                         </div>
                       </div>
