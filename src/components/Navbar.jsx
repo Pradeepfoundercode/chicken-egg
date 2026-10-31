@@ -4,7 +4,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className="w-full relative z-30 bg-[#ede9e0]">
+    <header className="w-full relative z-30 bg-[#f1f1f1]">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 pt-7 pb-4 flex items-center justify-between">
         {/* Brand / Logo */}
         <a href="#" className="flex items-center gap-2.5 group">

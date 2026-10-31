@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
-import chickenVideo from '../assets/WhatsApp Video 2026-10-29 at 3.15.15 PM.mp4'
+import chickenVideo from '../assets/WhatsApp Video 2026-10-30 at 4.47.33 PM.mp4'
 
 export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggsLanded }) {
   const line1Ref = useRef(null)
@@ -99,7 +99,7 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
   }, [])
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#FAF5EC] pt-6 md:pt-9 pb-28 sm:pb-36 lg:pb-35 min-h-[580px] sm:min-h-[640px]">
+    <section className="relative w-full overflow-hidden  pt-4 sm:pt-6 md:pt-9 pb-22 sm:pb-28 lg:pb-32 h-[590px] lg:h-[660px]">
       {/* Full Hero Section Video (Plays once; onTimeUpdate / onEnded triggers egg drop immediately) */}
       <video
         ref={videoRef}
@@ -115,7 +115,7 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
           }
         }}
         onEnded={triggerEggDropNow}
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none z-0 mix-blend-multiply"
+        className="absolute inset-0 w-full h-full  object-cover object-[72%_bottom] lg:object-center pointer-events-none select-none z-0 mix-blend-multiply mt-[170px] lg:mt-0"
       />
 
       {/* Decorative 4-point Golden Sparkle 1 (Top Center-Left) */}
@@ -129,38 +129,38 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
           
           {/* Left Column: Headline, Subtitle & CTA (Staggered entrance when hen sits down) */}
-          <div className="lg:col-span-6 z-20 flex flex-col items-start pt-2 md:pt-4 lg:pt-5 will-change-transform">
+          <div className="lg:col-span-6 z-20 flex flex-col items-start pt-1.5 sm:pt-2 md:pt-4 lg:pt-5 will-change-transform">
             {/* Headline */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[72px] xl:text-[80px] font-black text-[#261711] tracking-tight leading-[1.08] overflow-hidden">
-              <div ref={line1Ref} className="flex items-center flex-wrap gap-x-3.5 gap-y-2 will-change-transform">
+            <h1 className="text-[38px] sm:text-5xl md:text-7xl lg:text-[72px] xl:text-[80px] font-black text-[#261711] tracking-tight leading-[1.08] overflow-hidden">
+              <div ref={line1Ref} className="flex items-center flex-wrap gap-x-2.5 sm:gap-x-3.5 gap-y-1.5 will-change-transform">
                 <span>Good</span>
-                <span className="inline-block bg-[#F5A623] text-[#261711] px-3.5 sm:px-4 py-0.5 rounded-xl shadow-xs">
+                <span className="badge-wiggle bg-[#F5A623] text-[#261711] px-2.5 sm:px-4 py-0.5 rounded-lg sm:rounded-xl shadow-xs select-none">
                   eggs.
                 </span>
               </div>
-              <div ref={line2Ref} className="mt-1 sm:mt-2 will-change-transform">
+              <div ref={line2Ref} className="mt-0.5 sm:mt-2 will-change-transform">
                 <span>Better</span>
               </div>
-              <div ref={line3Ref} className="mt-1 sm:mt-2 will-change-transform">
-                <span className="inline-block bg-[#F5A623] text-[#261711] px-3.5 sm:px-4 py-0.5 rounded-xl shadow-xs">
+              <div ref={line3Ref} className="mt-0.5 sm:mt-2 will-change-transform">
+                <span className="badge-wiggle bg-[#F5A623] text-[#261711] px-2.5 sm:px-4 py-0.5 rounded-lg sm:rounded-xl shadow-xs select-none">
                   mornings.
                 </span>
               </div>
             </h1>
 
             {/* Subtitle */}
-            <p ref={subtitleRef} className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-[#6D5C50] font-normal leading-relaxed max-w-lg will-change-transform">
+            <p ref={subtitleRef} className="mt-3 sm:mt-6 lg:mt-8 text-sm sm:text-base md:text-xl text-[#6D5C50] font-normal leading-relaxed max-w-lg will-change-transform">
               Fresh brown and white eggs, from our flock to your plate.
             </p>
 
             {/* CTA Button */}
-            <div ref={ctaRef} className="mt-8 sm:mt-10 will-change-transform">
+            <div ref={ctaRef} className="mt-4 sm:mt-8 lg:mt-10 will-change-transform">
               <a
                 href="#our-eggs"
-                className="group inline-flex items-center gap-3.5 bg-[#F5A623] hover:bg-[#e69818] active:scale-95 text-[#261711] font-bold text-base sm:text-lg px-7 sm:px-8 py-3.5 sm:py-4 rounded-full shadow-md shadow-amber-900/10 hover:shadow-lg transition-all duration-200 cursor-pointer"
+                className="group inline-flex items-center gap-2.5 sm:gap-3.5 bg-[#F5A623] hover:bg-[#e69818] hover:scale-105 active:scale-95 text-[#261711] font-bold text-sm sm:text-base lg:text-lg px-5 sm:px-7 lg:px-8 py-2.5 sm:py-3.5 lg:py-4 rounded-full shadow-md shadow-amber-900/10 hover:shadow-xl hover:shadow-amber-900/20 transition-all duration-300 ease-out cursor-pointer"
               >
                 <span>Meet the eggs</span>
-                <span className="text-xl font-extrabold group-hover:translate-y-0.5 transition-transform leading-none">
+                <span className="text-base sm:text-xl font-extrabold group-hover:translate-y-1 transition-transform duration-300 leading-none">
                   ↓
                 </span>
               </a>
@@ -168,7 +168,7 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
           </div>
 
           {/* Right Column: Animated Hen Video + Egg Anchors */}
-          <div className="lg:col-span-6 relative flex items-center justify-center mt-4 lg:mt-0 -translate-y-2 sm:-translate-y-3">
+          <div className="lg:col-span-6 relative flex items-center justify-center mt-4 lg:mt-0 -translate-y-2 sm:-translate-y-3 pointer-events-none">
             <div className="relative w-full max-w-[540px] sm:max-w-[580px] lg:max-w-[620px] h-[400px] sm:h-[450px] md:h-[490px] flex items-end justify-center select-none">
 
               {/* Sparkle 2 (Above Chicken) */}
@@ -181,13 +181,13 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
               {/* 2. Anchor target for Brown Egg (Equal size & level with white egg) */}
               <div
                 ref={heroBrownRef}
-                className="absolute z-20 left-0 sm:left-4 md:left-6 -bottom-6 sm:-bottom-8 md:-bottom-10 lg:-bottom-12 w-44 sm:w-52 md:w-58 lg:w-62 h-54 sm:h-62 md:h-68 lg:h-74 pointer-events-none"
+                className="absolute z-20 left-2 sm:left-4 lg:left-6 bottom-24 sm:bottom-26 md:-bottom-10 lg:-bottom-12 w-48 sm:w-54 lg:w-62 h-58 sm:h-66 lg:h-74 pointer-events-none"
               />
 
               {/* 3. Anchor target for White Egg (Exact same size & baseline level) */}
               <div
                 ref={heroWhiteRef}
-                className="absolute z-30 left-26 sm:left-34 md:left-42 lg:left-48 -bottom-6 sm:-bottom-8 md:-bottom-10 lg:-bottom-12 w-44 sm:w-52 md:w-58 lg:w-62 h-54 sm:h-62 md:h-68 lg:h-74 pointer-events-none"
+                className="absolute z-30 left-24 sm:left-34 lg:left-48 bottom-24 sm:bottom-26 md:-bottom-10 lg:-bottom-12 w-48 sm:w-54 lg:w-62 h-58 sm:h-66 lg:h-74 pointer-events-none"
               />
 
               {/* Hen Footprints Trail */}
@@ -209,22 +209,6 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
           </div>
 
         </div>
-      </div>
-
-      {/* Bottom Warm Ground Wave Divider */}
-      <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none pointer-events-none z-10">
-        <svg
-          viewBox="0 0 1440 64"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-8 sm:h-12 lg:h-14 preserve-3d"
-        >
-          <path
-            d="M0 32C180 50 360 56 540 40C720 24 900 12 1080 26C1260 40 1380 48 1440 44V64H0V32Z"
-            fill="#F6E39D"
-            opacity="0.95"
-          />
-        </svg>
       </div>
     </section>
   )
