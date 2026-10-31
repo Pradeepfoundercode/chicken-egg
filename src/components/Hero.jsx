@@ -99,7 +99,7 @@ export default function Hero({ heroBrownRef, heroWhiteRef, onVideoEnded, areEggs
   }, [])
 
   return (
-    <section className="relative w-full overflow-hidden  pt-4 sm:pt-6 md:pt-9 pb-22 sm:pb-28 lg:pb-32 h-[590px] lg:h-[660px]">
+    <section className="relative w-full overflow-hidden  pt-4 sm:pt-6 md:pt-9 pb-22 sm:pb-28 lg:pb-32 h-[610px] lg:h-[660px]">
       {/* Full Hero Section Video (Plays once; onTimeUpdate / onEnded triggers egg drop immediately) */}
       <video
         ref={videoRef}

@@ -218,7 +218,7 @@ export default function TwoShellsSection({
 
             {/* 2. Glossy Orange 3D Ampersand: 2nd on mobile (order-2), centered absolute on desktop */}
             <div
-              className={`order-2 my-2 sm:my-3 lg:my-0 lg:absolute lg:left-1/2 lg:top-28 sm:lg:top-32 md:lg:top-36 lg:top-40 lg:-translate-x-1/2 lg:-translate-y-1/2 z-10 transition-all duration-700 ease-out flex items-center justify-center ${
+              className={`order-2 my-4 sm:my-5 lg:my-0 lg:absolute lg:left-1/2 lg:top-28 sm:lg:top-32 md:lg:top-36 lg:top-40 lg:-translate-x-1/2 lg:-translate-y-1/2 z-10 transition-all duration-700 ease-out flex items-center justify-center ${
                 showAmpersand
                   ? 'scale-100 opacity-100'
                   : 'scale-50 opacity-0 pointer-events-none'
@@ -227,7 +227,7 @@ export default function TwoShellsSection({
               <img
                 src={ampersandImg}
                 alt="&"
-                className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-22 h-auto object-contain drop-shadow-md select-none pointer-events-none"
+                className="w-28 sm:w-32 md:w-36 lg:w-20 xl:w-22 h-auto object-contain drop-shadow-md select-none pointer-events-none"
               />
             </div>
 

@@ -121,9 +121,43 @@ export default function PickYourPackSection({
 
   const toggleBtnRef = useRef(null)
   const cardsGridRef = useRef(null)
+  const isFirstRender = useRef(true)
 
-  // Cards tabhi show honge jab falling egg box me rakhe egg ke bilkul upar rakh jayega (scrollProgress >= 0.96)
+  // Cards pehle se show nahi honge - jab egg land hone wala hoga tabhi reveal honge
   const showCards = scrollProgress >= 0.96
+
+  // Jab user Brown ya White button click kare, to box me eggs upar se gir kar cup me bounce honge!
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
+    const cards = cardsGridRef.current?.querySelectorAll('.pack-card')
+    if (cards && cards.length) {
+      // Teeno boxes (Pack of 6, 10, 12) me ek sath parallel drop hoga
+      cards.forEach((card) => {
+        const cardEggs = card.querySelectorAll('.active-egg-drop')
+        if (cardEggs.length) {
+          gsap.fromTo(
+            cardEggs,
+            {
+              y: -48,
+              opacity: 1,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.42,
+              ease: 'bounce.out',
+              stagger: 0.012,
+              clearProps: 'transform',
+            }
+          )
+        }
+      })
+    }
+  }, [selectedType])
 
   // GSAP ScrollTrigger: Triggers Brown/White toggle button when user arrives in Section 3
   useEffect(() => {
@@ -209,13 +243,17 @@ export default function PickYourPackSection({
             <button
               type="button"
               onClick={() => setSelectedType('brown')}
-              className={`flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-bold text-sm sm:text-base transition-all duration-300 cursor-pointer ${
+              className={`group flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-bold text-sm sm:text-base transition-all duration-300 cursor-pointer active:scale-95 ${
                 selectedType === 'brown'
                   ? 'bg-[#2D1B11] text-white shadow-xs scale-102'
                   : 'text-[#6D5C50] hover:text-[#261711] hover:bg-black/5'
               }`}
             >
-              <span className="w-3.5 h-3.5 rounded-full bg-[#C68A4C] inline-block shadow-xs" />
+              <span
+                className={`w-3.5 h-3.5 rounded-full bg-[#C68A4C] inline-block shadow-xs transition-transform duration-300 ${
+                  selectedType === 'brown' ? 'scale-110' : 'group-hover:scale-105'
+                }`}
+              />
               <span>Brown</span>
             </button>
 
@@ -223,13 +261,17 @@ export default function PickYourPackSection({
             <button
               type="button"
               onClick={() => setSelectedType('white')}
-              className={`flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-bold text-sm sm:text-base transition-all duration-300 cursor-pointer ${
+              className={`group flex items-center gap-2 px-5 sm:px-6 py-2 rounded-full font-bold text-sm sm:text-base transition-all duration-300 cursor-pointer active:scale-95 ${
                 selectedType === 'white'
                   ? 'bg-[#2D1B11] text-white shadow-xs scale-102'
                   : 'text-[#6D5C50] hover:text-[#261711] hover:bg-black/5'
               }`}
             >
-              <span className="w-3.5 h-3.5 rounded-full bg-[#FFF9ED] border border-[#DDD0BC] inline-block shadow-xs" />
+              <span
+                className={`w-3.5 h-3.5 rounded-full bg-[#FFF9ED] border border-[#DDD0BC] inline-block shadow-xs transition-transform duration-300 ${
+                  selectedType === 'white' ? 'scale-110' : 'group-hover:scale-105'
+                }`}
+              />
               <span>White</span>
             </button>
           </div>
@@ -241,7 +283,7 @@ export default function PickYourPackSection({
         </div>
       </div>
 
-      {/* Product Cards Grid - Only opacity transition so dock egg measurement is 100% pixel accurate */}
+      {/* Product Cards Grid - Pehle se show nahi hoga, egg land hone par hi show hoga */}
       <div
         ref={cardsGridRef}
         className={`max-w-6xl mx-auto mt-12 sm:mt-14 lg:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 relative z-10 transition-opacity duration-300 ease-out ${
@@ -335,9 +377,13 @@ export default function PickYourPackSection({
                         {/* Empty Carton: Render Brown Egg from code (No shadow) */}
                         {pack.isEmptyBase && (
                           <div
-                            className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none"
+                            className={`absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none ${
+                              !isWhite ? 'active-egg-drop' : ''
+                            }`}
                             style={{
                               opacity: brownEggOpacity,
+                              backfaceVisibility: 'hidden',
+                              WebkitBackfaceVisibility: 'hidden',
                             }}
                           >
                             <img
@@ -348,17 +394,21 @@ export default function PickYourPackSection({
                           </div>
                         )}
 
-                        {/* White Egg Overlay (No shadow) */}
+                        {/* White Egg Overlay (No shadow, 100% sharp) */}
                         <div
-                          className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none"
+                          className={`absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none select-none ${
+                            isWhite ? 'active-egg-drop' : ''
+                          }`}
                           style={{
                             opacity: whiteEggOpacity,
+                            backfaceVisibility: 'hidden',
+                            WebkitBackfaceVisibility: 'hidden',
                           }}
                         >
                           <img
                             src={whiteEggImg}
                             alt=""
-                            className="w-full h-full object-contain scale-y-[0.94] pointer-events-none select-none"
+                            className="w-full h-full object-contain pointer-events-none select-none"
                           />
                         </div>
                       </div>

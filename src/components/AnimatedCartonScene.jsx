@@ -91,28 +91,56 @@ export default function AnimatedCartonScene({
             endTrigger: sec4SectionRef.current,
             end: 'top 20%',   // Finishes when Section 4 settles in place
             scrub: 0.6,       // Smooth physical scroll scrubbing
+            onLeaveBack: () => {
+              // Wapas upar scroll karte hi traveling box completely hide ho jayega
+              gsap.set(cartonBoxRef.current, { opacity: 0, visibility: 'hidden' })
+              if (sec3SelectedCartonRef?.current) {
+                gsap.set(sec3SelectedCartonRef.current, { opacity: 1 })
+              }
+            },
+            onUpdate: (self) => {
+              if (self.progress === 0) {
+                gsap.set(cartonBoxRef.current, { opacity: 0, visibility: 'hidden' })
+                if (sec3SelectedCartonRef?.current) {
+                  gsap.set(sec3SelectedCartonRef.current, { opacity: 1 })
+                }
+              }
+            },
           },
         })
 
-        // 1. Instantaneous handoff at scroll start: cartonBoxRef shows at scale 1, card box hides (zero crossfade blur!)
-        tl.set(
+        // 1. Instantaneous handoff at scroll start: cartonBoxRef shows at scale 1, card box hides
+        // fromTo ensures reversing past start automatically hides the traveling box and restores card box
+        tl.fromTo(
           cartonBoxRef.current,
+          {
+            x: startX,
+            y: startY,
+            scale: 1,
+            opacity: 0,
+            visibility: 'hidden',
+          },
           {
             x: startX,
             y: startY,
             scale: 1,
             opacity: 1,
             visibility: 'visible',
+            duration: 0.001,
             immediateRender: false,
           },
           0
         )
 
         if (sec3SelectedCartonRef?.current) {
-          tl.set(
+          tl.fromTo(
             sec3SelectedCartonRef.current,
             {
+              opacity: 1,
+            },
+            {
               opacity: 0,
+              duration: 0.001,
               immediateRender: false,
             },
             0
@@ -241,7 +269,7 @@ export default function AnimatedCartonScene({
                   <img
                     src={whiteEggImg}
                     alt=""
-                    className="w-full h-full object-contain scale-y-[0.94] pointer-events-none select-none"
+                    className="w-full h-full object-contain pointer-events-none select-none"
                   />
                 </div>
               </div>

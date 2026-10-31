@@ -23,23 +23,23 @@ export default function Home() {
 
   const [scrollProgress, setScrollProgress] = useState(0)
   const [selectedType, setSelectedType] = useState('brown') // 'brown' | 'white'
-  // Small devices = pack-6, Large devices = pack-10
+  // Small devices = pack-12 (default), Large devices = pack-10
   const [selectedPackId, setSelectedPackId] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      return 'pack-6'
+      return 'pack-12'
     }
     return 'pack-10'
   })
   const [isIntroComplete, setIsIntroComplete] = useState(false)
   const [areEggsLanded, setAreEggsLanded] = useState(false)
 
-  // Auto-switch pack based on screen size (small devices: pack-6, large devices: pack-10)
+  // Auto-switch pack based on screen size (small devices: pack-12, large devices: pack-10)
   useEffect(() => {
     const handleResize = () => {
       const isMobile = window.innerWidth < 1024
       setSelectedPackId((prev) => {
-        if (isMobile && prev === 'pack-10') return 'pack-6'
-        if (!isMobile && prev === 'pack-6') return 'pack-10'
+        if (isMobile && prev === 'pack-10') return 'pack-12'
+        if (!isMobile && prev === 'pack-12') return 'pack-10'
         return prev
       })
     }
